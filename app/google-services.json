@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "666463495409",
+    "firebase_url": "https://stepcounter-74584.firebaseio.com",
+    "project_id": "stepcounter-74584",
+    "storage_bucket": "stepcounter-74584.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666463495409:android:6a0e0c03755cda6c",
+        "android_client_info": {
+          "package_name": "com.example.varga.steps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "666463495409-id9g5tv2fj7on1fvno6cd27dj8gbk290.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_1DGtchsQlf2Lo65wvPWnOw0Qm_AbaVk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
