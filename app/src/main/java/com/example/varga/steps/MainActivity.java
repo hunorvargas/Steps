@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, StepListener {
 
+    private Register register;
     private StepDetector simpleStepDetector;
     private SensorManager sensorManager;
     private Sensor accel;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private int numSteps;
     private TextView TvSteps;
     private Button BtnStart,BtnStop;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         TvSteps = (TextView) findViewById(R.id.tv_steps);
         BtnStart =(Button) findViewById(R.id.btn_start);
         BtnStop = (Button) findViewById(R.id.btn_stop);
-
 
 
         BtnStart.setOnClickListener(new OnClickListener() {
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void step(long timeNs) {
         numSteps++;
         TvSteps.setText(TEXT_NUM_STEPS + numSteps);
+
     }
 
 }
