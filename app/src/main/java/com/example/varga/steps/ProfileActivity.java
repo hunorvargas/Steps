@@ -1,5 +1,6 @@
 package com.example.varga.steps;
 
+
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        https://stepcounter-74584.firebaseio.com/
         //initializing firebase authentication object
         firebaseAuth = FirebaseAuth.getInstance();
         ;
@@ -74,59 +75,59 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
 
-            BtnStart.setOnClickListener(new OnClickListener() {
+        BtnStart.setOnClickListener(new OnClickListener() {
 
-                @Override
-                public void onClick(View arg0) {
+            @Override
+            public void onClick(View arg0) {
 
-                    numSteps = 0;
-                    sensorManager.registerListener(ProfileActivity.this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+                numSteps = 0;
+                sensorManager.registerListener(ProfileActivity.this, accel, SensorManager.SENSOR_DELAY_FASTEST);
 
-                }
-            });
-
-
-            BtnStop.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-
-                    sensorManager.unregisterListener(ProfileActivity.this);
-
-                }
-            });
-
-
-        }
-
-        @Override
-        public void onAccuracyChanged (Sensor sensor,int accuracy){
-        }
-
-        @Override
-        public void onSensorChanged (SensorEvent event){
-            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                simpleStepDetector.updateAccel(
-                        event.timestamp, event.values[0], event.values[1], event.values[2]);
             }
-        }
+        });
 
-        @Override
-        public void step ( long timeNs){
-            numSteps++;
-            TvSteps.setText(TEXT_NUM_STEPS + numSteps);
 
-        }
-        @Override
-        public void onClick (View view){
-            //if logout is pressed
-            if (view == buttonLogout) {
-                //logging out the user
-                firebaseAuth.signOut();
-                //closing activity
-                finish();
-                //starting login activity
-                startActivity(new Intent(this, LoginActivity.class));
+        BtnStop.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                sensorManager.unregisterListener(ProfileActivity.this);
+
             }
+        });
+
+
+    }
+
+    @Override
+    public void onAccuracyChanged (Sensor sensor,int accuracy){
+    }
+
+    @Override
+    public void onSensorChanged (SensorEvent event){
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            simpleStepDetector.updateAccel(
+                    event.timestamp, event.values[0], event.values[1], event.values[2]);
         }
     }
+
+    @Override
+    public void step ( long timeNs){
+        numSteps++;
+        TvSteps.setText(TEXT_NUM_STEPS + numSteps);
+
+    }
+    @Override
+    public void onClick (View view){
+        //if logout is pressed
+        if (view == buttonLogout) {
+            //logging out the user
+            firebaseAuth.signOut();
+            //closing activity
+            finish();
+            //starting login activity
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+    }
+}
