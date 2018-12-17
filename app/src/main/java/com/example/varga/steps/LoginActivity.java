@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (task.isSuccessful()) {
                     finish();
                     startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+
                 } else {
 
                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {

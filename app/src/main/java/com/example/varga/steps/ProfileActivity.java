@@ -14,6 +14,10 @@ import android.hardware.SensorEventListener;
 import android.view.View.OnClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.*;
+
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener,SensorEventListener, StepListener {
 
@@ -30,15 +34,20 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private int numSteps;
     private TextView TvSteps;
     private Button BtnStart,BtnStop;
+    private DatabaseReference rootRef,demoRef;
+    private FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        https://stepcounter-74584.firebaseio.com/
+
         //initializing firebase authentication object
         firebaseAuth = FirebaseAuth.getInstance();
-        ;
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        demoRef = rootRef.child("demo");
+
+
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -70,7 +79,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         //adding listener to button
         buttonLogout.setOnClickListener(this);
+        @Override
+        protected void onStart () {
+            super.onStart();
+            mchild.addValueEventListener(new ValueEventListener() {
 
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Integer adc = dataSnapshot.getValue(Integer.class);
+                    txt.setText(""+  adc);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
 
 
@@ -114,6 +139,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void step ( long timeNs){
+        demoRef.push().setValue(numSteps);
         numSteps++;
         TvSteps.setText(TEXT_NUM_STEPS + numSteps);
 
@@ -124,10 +150,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (view == buttonLogout) {
             //logging out the user
             firebaseAuth.signOut();
+            Intent intent = new Intent(ProfileActivity.this,LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             //closing activity
             finish();
             //starting login activity
-            startActivity(new Intent(this, LoginActivity.class));
+          //  startActivity(new Intent(this, LoginActivity.class));
         }
     }
 }
