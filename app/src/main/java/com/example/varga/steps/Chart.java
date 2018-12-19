@@ -28,7 +28,7 @@ public class Chart extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        lineChartView = findViewById(R.id.chart);
+      //  lineChartView = findViewById(R.id.chart);
 
         List yAxisValues = new ArrayList();
         List axisValues = new ArrayList();

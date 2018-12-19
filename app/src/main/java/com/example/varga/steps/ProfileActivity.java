@@ -15,8 +15,10 @@ import android.view.View.OnClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
+import java.util.Calendar;
 
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener,SensorEventListener, StepListener {
@@ -25,17 +27,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseAuth firebaseAuth;
 
     //view objects
-    private TextView textViewUserEmail;
+    private TextView textViewUserEmail,TvSteps,CurrentTime;
     private Button buttonLogout;
     private StepDetector simpleStepDetector;
     private SensorManager sensorManager;
     private Sensor accel;
     private static final String TEXT_NUM_STEPS = "Number of Steps: ";
-    private int numSteps;
-    private TextView TvSteps;
+    private int numSteps;// ide kell vissza olvasni
+
     private Button BtnStart,BtnStop;
-    private DatabaseReference rootRef,demoRef;
-    private FirebaseDatabase database;
+    private String mUserID;
+    private Date currentDate;
+
+    //private FirebaseDatabase database;
+    DatabaseReference mDatabaseReference,mDatabaseReference2;
+    FirebaseDatabase mFirebasedatabase;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +52,33 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         //initializing firebase authentication object
         firebaseAuth = FirebaseAuth.getInstance();
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        demoRef = rootRef.child("demo");
+        mFirebasedatabase = FirebaseDatabase.getInstance();
+        mUserID = FirebaseAuth.getInstance().getUid();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        mDatabaseReference.keepSynced(true);
 
 
+        mDatabaseReference2= FirebaseDatabase.getInstance().getReferenceFromUrl("https://stepcounter-74584.firebaseio.com/");
+        DatabaseReference mChild = mDatabaseReference2.child("Users").child("UserID").child(
+        "StepsNum");
+
+
+
+
+        //initializing current date
+
+        currentDate = Calendar.getInstance().getTime();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         simpleStepDetector = new StepDetector();
 
         simpleStepDetector.registerListener(this);
+        //intizializing buttons
 
-        TvSteps = (TextView) findViewById(R.id.tv_steps);
         BtnStart = (Button) findViewById(R.id.btn_start);
         BtnStop = (Button) findViewById(R.id.btn_stop);
+        buttonLogout = (Button) findViewById(R.id.buttonLogout);
         //if the user is not logged in
         //that means current user will return null
         if (firebaseAuth.getCurrentUser() == null) {
@@ -71,31 +92,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
         //initializing views
+        TvSteps = (TextView) findViewById(R.id.tv_steps);
+        CurrentTime = (TextView) findViewById(R.id.current_time);
         textViewUserEmail = (TextView) findViewById(R.id.textViewUserEmail);
-        buttonLogout = (Button) findViewById(R.id.buttonLogout);
+
 
         //displaying logged in user name
         textViewUserEmail.setText("Welcome " + user.getEmail());
-
+        //displaying current time
+        CurrentTime.setText(currentDate.toString());
         //adding listener to button
         buttonLogout.setOnClickListener(this);
-        @Override
-        protected void onStart () {
-            super.onStart();
-            mchild.addValueEventListener(new ValueEventListener() {
 
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Integer adc = dataSnapshot.getValue(Integer.class);
-                    txt.setText(""+  adc);
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
 
 
 
@@ -105,11 +113,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View arg0) {
 
-                numSteps = 0;
+
                 sensorManager.registerListener(ProfileActivity.this, accel, SensorManager.SENSOR_DELAY_FASTEST);
 
             }
         });
+
+
+
 
 
         BtnStop.setOnClickListener(new OnClickListener() {
@@ -126,6 +137,25 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot stepssnapshot : dataSnapshot.getChildren()) {
+                    Steps oldsteps = stepssnapshot.getValue(Steps.class);
+                    System.out.println("StepsNume" + oldsteps.getStepsNum());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+        @Override
     public void onAccuracyChanged (Sensor sensor,int accuracy){
     }
 
@@ -138,12 +168,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void step ( long timeNs){
-        demoRef.push().setValue(numSteps);
+    public void step ( long timeNs) {
         numSteps++;
+        currentDate = Calendar.getInstance().getTime();
         TvSteps.setText(TEXT_NUM_STEPS + numSteps);
-
+        Steps step = new Steps(mUserID,numSteps,currentDate);
+        mDatabaseReference.child(mUserID).setValue(step);
+        mDatabaseReference.child(mUserID).push();
     }
+
+
     @Override
     public void onClick (View view){
         //if logout is pressed
@@ -160,4 +194,5 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
           //  startActivity(new Intent(this, LoginActivity.class));
         }
     }
+
 }
