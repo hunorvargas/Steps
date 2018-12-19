@@ -16,12 +16,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 import java.util.Calendar;
-
-
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
+import lecho.lib.hellocharts.view.LineChartView;
 
-public class ProfileActivity extends AppCompatActivity implements View.OnClickListener,SensorEventListener, StepListener {
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener,SensorEventListener, StepListener{
 
     //firebase auth object
     private FirebaseAuth firebaseAuth;
@@ -33,9 +31,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private SensorManager sensorManager;
     private Sensor accel;
     private static final String TEXT_NUM_STEPS = "Number of Steps: ";
-    private int numSteps;// ide kell vissza olvasni
-
-    private Button BtnStart,BtnStop;
+    public int numSteps;
+    private LineChartView mChart;
+    private Button BtnStart,BtnStop,BtnChart;
     private String mUserID;
     private Date currentDate;
 
@@ -43,7 +41,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     DatabaseReference mDatabaseReference,mDatabaseReference2;
     FirebaseDatabase mFirebasedatabase;
 
-
+    public void setNumSteps(int numSteps) {
+        this.numSteps = numSteps;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +56,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mUserID = FirebaseAuth.getInstance().getUid();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users");
         mDatabaseReference.keepSynced(true);
-
-
-        mDatabaseReference2= FirebaseDatabase.getInstance().getReferenceFromUrl("https://stepcounter-74584.firebaseio.com/");
-        DatabaseReference mChild = mDatabaseReference2.child("Users").child("UserID").child(
-        "StepsNum");
-
-
-
 
         //initializing current date
 
@@ -79,6 +71,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         BtnStart = (Button) findViewById(R.id.btn_start);
         BtnStop = (Button) findViewById(R.id.btn_stop);
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
+        BtnChart = (Button) findViewById(R.id.chartview);
+
         //if the user is not logged in
         //that means current user will return null
         if (firebaseAuth.getCurrentUser() == null) {
@@ -105,9 +99,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         buttonLogout.setOnClickListener(this);
 
 
-
-
-
         BtnStart.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -120,9 +111,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         });
 
 
-
-
-
         BtnStop.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -132,29 +120,20 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot stepssnapshot : dataSnapshot.getChildren()) {
-                    Steps oldsteps = stepssnapshot.getValue(Steps.class);
-                    System.out.println("StepsNume" + oldsteps.getStepsNum());
-                }
-            }
+        BtnChart.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onClick(View arg0) {
+
+
+               // finish();
+               // startActivity(new Intent(ProfileActivity.this, Chart.class));
 
             }
         });
     }
+
+
         @Override
     public void onAccuracyChanged (Sensor sensor,int accuracy){
     }
