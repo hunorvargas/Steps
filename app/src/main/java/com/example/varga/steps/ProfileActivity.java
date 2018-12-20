@@ -79,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             //closing this activity
             finish();
             //starting login activity
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, SignUpActivity.class));
         }
 
         //getting current user
@@ -96,6 +96,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         //displaying current time
         CurrentTime.setText(currentDate.toString());
         //adding listener to button
+
         buttonLogout.setOnClickListener(this);
 
 
@@ -163,7 +164,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (view == buttonLogout) {
             //logging out the user
             firebaseAuth.signOut();
-            Intent intent = new Intent(ProfileActivity.this,LoginActivity.class);
+            Intent intent = new Intent(ProfileActivity.this,SignUpActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
